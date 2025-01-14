@@ -1,0 +1,43 @@
+import requests
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+API_KEY = 'your_api_key_here'
+
+BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
+
+CITY = "London"
+
+def fetch_weather_data(city, api_key):
+    url = f"{BASE_URL}q={city}&appid={api_key}&units=metric"  # Using metric units (Celsius)
+    response = requests.get(url)
+    data = response.json()
+    return data
+weather_data = fetch_weather_data(CITY, API_KEY)
+city_name = weather_data['name']
+temperature = weather_data['main']['temp']
+humidity = weather_data['main']['humidity']
+pressure = weather_data['main']['pressure']
+weather_description = weather_data['weather'][0]['description']
+
+print(f"City: {city_name}")
+print(f"Temperature: {temperature}°C")
+print(f"Humidity: {humidity}%")
+print(f"Pressure: {pressure} hPa")
+print(f"Weather: {weather_description}")
+
+weather_df = pd.DataFrame({
+    'Metric': ['Temperature (°C)', 'Humidity (%)', 'Pressure (hPa)'],
+    'Value': [temperature, humidity, pressure]
+})
+
+sns.set(style="whitegrid")
+plt.figure(figsize=(8, 6))
+
+sns.barplot(x='Metric', y='Value', data=weather_df, palette="Blues_d")
+plt.title(f"Weather Information for {city_name}", fontsize=16)
+plt.ylabel('Value', fontsize=12)
+plt.xlabel('Metrics', fontsize=12)
+
+
